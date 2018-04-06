@@ -20,9 +20,10 @@ $capsule->addConnection(array(
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-$log_data = Capsule::table('raw_logs')->get();
+$log_data = Capsule::table('raw_logs')->where('status',0)->get();
 
 foreach ($log_data as $value) {
+    Capsule::table('raw_logs')->where('id',$value->id)->update(['status'=>1]);
     $empid = getEmpId($value->employee_code);
     $in = checkUserPunchedIn($empid);
     if ($value->direction == 'in' && !$in) {
@@ -47,7 +48,7 @@ foreach ($log_data as $value) {
         ]);
     }
 
-    Capsule::table('raw_logs')->where('id',$value->id)->delete();
+
 }
 
 function getUTCTime($datestring)
